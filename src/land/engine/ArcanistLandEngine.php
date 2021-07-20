@@ -276,19 +276,7 @@ abstract class ArcanistLandEngine
   }
 
   final public function allowForcedLandWithoutReview($revision_refs) {
-    $expected_pattern = "/\sFORCE_LAND=.+/m";
-    $this->getWorkflow()->loadHardpoints(
-      $revision_refs,
-      array(
-        ArcanistRevisionRef::HARDPOINT_COMMITMESSAGE,
-      ));
-    foreach($revision_refs as $ref){
-      $commit_msg = $ref->getCommitMessage();
-      if(preg_match($expected_pattern, $commit_msg) > 0){
-        return true;
-      }
-    }
-    return false;
+    return !$this->getWorkflow()->getIsPhlq();
   }
 
   final public function allowForcedLandWithFailingForceableTests($revision_refs) {
@@ -713,7 +701,7 @@ abstract class ArcanistLandEngine
               continue;
             }
           }
-          
+
           else {
             // Land queue won't allow this revision to land so block locally as well
             $log->writeError(
